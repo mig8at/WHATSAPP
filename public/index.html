@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+
+    <style>
+        html,
+        body,
+        #app {
+            height: 100vh;
+        }
+
+
+
+        .qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            width: 300px;
+            height: 300px;
+
+
+        }
+
+        .cont-qr {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background: #43C6AC;
+            background: -webkit-linear-gradient(to right, #191654, #43C6AC);
+            background: linear-gradient(to right, #191654, #43C6AC);
+        }
+
+        .collection-item {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div v-if="qr" class="cont-qr">
+            <div class="z-depth-2 qrcode">
+                <qr-code :text="qr"></qr-code>
+            </div>
+        </div>
+        <div v-else>
+            <nav class="teal">
+                <div class="nav-wrapper">&nbsp; &nbsp;
+                    <a href="#!" class="brand-logo"> <i class="material-icons">bubble_chart</i>BOT</a>
+                    <ul class="right hide-on-med-and-down">
+                        <li><a><i class="material-icons">more_vert</i></a></li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="container row">
+
+                <div class="col s3">
+                    <ul class="collection with-header card">
+
+                        <li class="collection-item" @click="prompt = {...example}">Nuevo</li>
+                        <li class="collection-item" v-for="p in prompts" @click="prompt = {...p}">{{p.name}}</li>
+                    </ul>
+                </div>
+
+                <div class="col s9 card">
+                    <form style="padding: 2rem;">
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <input id="name" type="text" class="validate" v-model="prompt.name">
+                                <label for="name">Nombre</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="icon" type="text" class="validate" v-model="prompt.auth">
+                                <label for="icon">Autorizar</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="prompt" class="materialize-textarea" v-model="prompt.prompt"></textarea>
+                                <label for="prompt">Prompt</label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: center;">
+                            <a v-if="!prompt.id" class="waves-effect waves-light btn" @click="savePrompt()"><i
+                                    class="material-icons right">save</i>GUARDAR</a>
+                            <a v-else class="waves-effect waves-light btn" @click="updatePrompt(prompt)"><i
+                                    class="material-icons right">save</i>ACTUALIZAR</a>
+                            &nbsp; &nbsp;
+                            <a v-if="prompt.id" class="waves-effect waves-light btn red"
+                                @click="removePrompt(prompt.id)"><i class="material-icons right">delete</i>BORRAR</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/index.js"></script>
+</body>
+
+</html>

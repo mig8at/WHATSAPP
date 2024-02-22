@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  mi-servicio-whatsapp:
+    image: miguel8at/whatsapp
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./auth:/usr/src/app/auth"
+    environment:
+      TOKEN: "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..dX_BlXL8z6JOBg45.UhLtm9SMj05kTWw-7nY8-qPzV-XXJkvrm_Cr0KJBy6uoRHukg3lawUcJ9A5hRvE3ZMJewVeY3DG0RIIbqtGsWNQFGE5ve7DFGxystsme"
