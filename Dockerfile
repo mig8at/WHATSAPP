@@ -10,7 +10,7 @@ EXPOSE 3000
 CMD ["npm", "start"]
 
 
-# docker build -t miguel8at/whatsapp .
-# docker push miguel8at/whatsapp
-# docker pull miguel8at/whatsapp
-# docker run --privileged -d -p 3000:3000 miguel8at/whatsapp
+# sudo docker build -t miguel8at/whatsapp .
+# sudo docker push miguel8at/whatsapp
+# sudo docker pull miguel8at/whatsapp
+# sudo docker run --privileged -d -p 3000:3000 miguel8at/whatsapp

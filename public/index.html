@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
 
 
     <style>
@@ -78,11 +79,18 @@
                 <div class="col s9 card">
                     <form style="padding: 2rem;">
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s4">
                                 <input id="name" type="text" class="validate" v-model="prompt.name">
                                 <label for="name">Nombre</label>
                             </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col s4">
+                                <select v-model="prompt.model">
+                                    <option value="gpt-3.5-turbo-0125">gpt-3.5</option>
+                                    <option value="gpt-4-0125-preview">gpt-4</option>
+                                </select>
+                                <label>Model</label>
+                            </div>
+                            <div class="input-field col s4">
                                 <input id="icon" type="text" class="validate" v-model="prompt.auth">
                                 <label for="icon">Autorizar</label>
                             </div>

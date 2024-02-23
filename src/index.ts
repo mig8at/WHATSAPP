@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import http from 'http';
 import { Server as SocketIOServer } from "socket.io";
-import { addAuthorized, db, getPromptAuth, getPromptPhone, removeAuthorized } from "./db";
+import { addAuthorized, db, getPromptAuth, getPromptPhone, getPrompts, removeAuthorized, removePrompt, savePrompt, updatePrompt } from "./db";
 import { execPrompt } from "./gpt";
 
 const app: Express = express();
@@ -18,38 +18,15 @@ const io = new SocketIOServer(server);
 let qrcode = '';
 let msg: Message;
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     socket.emit('qr', qrcode);
-
-    db.all('SELECT * FROM prompts', (err, rows) => {
-        if (err) console.error('Error al obtener los prompts', err);
-        else socket.emit('prompts', rows);
-    });
-
-    socket.on('save-prompt', async ({ name, auth, prompt }) => {
-        db.run('INSERT INTO prompts (name, auth, prompt) VALUES (?, ?, ?)', [name, auth, prompt], function (err) {
-            if (err) console.error('Error al guardar el prompt', err);
-            else socket.emit('new-prompt', { id: this.lastID, name, auth, prompt });
-        });
-    });
-
-    socket.on('update-prompt', async ({ id, name, auth, prompt }) => {
-        db.run('UPDATE prompts SET name = ?, auth = ?, prompt = ? WHERE id = ?', [name, auth, prompt, id], (err) => {
-            if (err) console.error('Error al actualizar el prompt', err);
-            else socket.emit('update-prompt', { id, name, auth, prompt });
-        });
-    });
-
-    socket.on('remove-prompt', async (id) => {
-        db.run('DELETE FROM prompts WHERE id = ?', [id], (err) => {
-            if (err) console.error('Error al eliminar el prompt', err);
-            else socket.emit('remove-prompt', id);
-        });
-    });
-
-
-
     setInterval(() => socket.emit('qr', qrcode), 1000);
+
+    socket.emit('prompts', await getPrompts());
+    socket.on('save-prompt', async prpt => socket.emit('save-prompt', await savePrompt(prpt)));
+    socket.on('update-prompt', async prpt => socket.emit('update-prompt', await updatePrompt(prpt)));
+    socket.on('remove-prompt', async id => socket.emit('remove-prompt', await removePrompt(id)));
+
 });
 
 app.get('/', (req, res) => {
@@ -76,7 +53,7 @@ server.listen(3000, async () => {
 
         if (propt != null && m.body.includes(propt.auth)) {
             try {
-                const res = await addAuthorized(m.id.remote, propt.id);
+                const res = await addAuthorized(m.id.remote, propt.id!);
                 client.sendMessage(m.id.remote, res);
                 return;
             } catch (error) {

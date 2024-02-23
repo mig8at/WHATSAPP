@@ -31,8 +31,9 @@ new Vue({
     qr: '',
     example: {
       name: 'New Prompt',
+      model: "gpt-3.5-turbo-0125",
       auth: '==+==',
-      prompt: 'Translate incoming messages. [text]. respond in this format  { msg: "en|es <- depending on the language of the message",english, spanish } designed to output JSON'
+      prompt: `Give me the translation of the following message.\nIf it is in English, will you give me the Spanish translation?\nIf it is in Spanish, you will give me the English translation. and only the translation. don't answer questions. the message is:`
     },
     prompt: {},
     prompts: []
@@ -45,33 +46,35 @@ new Vue({
     this.socket.on('disconnect', () => this.qr = '');
     this.socket.on('connect', () => console.log('Conectado al servidor'));
     this.socket.on('prompts', data => this.prompts = data);
-    this.socket.on('new-prompt', data => {
+
+    this.socket.on('save-prompt', data => {
       this.prompts.push(data);
       this.prompt = { ...this.prompts[this.prompts.length - 1] };
     });
-    this.socket.on('remove-prompt', id => {
-      this.prompts = this.prompts.filter(p => p.id !== id);
-      this.prompt = { ...this.example };
-    });
+
     this.socket.on('update-prompt', prompt => {
       this.prompts = this.prompts.map(p => p.id === prompt.id ? prompt : p);
       this.prompt = { ...prompt };
     });
 
+    this.socket.on('remove-prompt', id => {
+      this.prompts = this.prompts.filter(p => p.id !== id);
+      this.prompt = { ...this.example };
+    });
+
     this.reload()
   },
   methods: {
-
-    removePrompt(id) {
-      this.socket.emit('remove-prompt', id);
+    savePrompt() {
+      this.socket.emit('save-prompt', this.prompt);
     },
 
     updatePrompt(prompt) {
       this.socket.emit('update-prompt', prompt);
     },
 
-    savePrompt() {
-      this.socket.emit('save-prompt', this.prompt);
+    removePrompt(id) {
+      this.socket.emit('remove-prompt', id);
     },
 
     reload() {
